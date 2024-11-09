@@ -21,12 +21,17 @@ Result<std::vector<Token>, std::string> Lexer::lex(std::string source) {
 		}
 	}
 
-	lexer.emptyToken(EOP);
+	Token endOfProgramToken;
+	endOfProgramToken.type = EOP;
+	endOfProgramToken.lexeme = "";
+	endOfProgramToken.line = lexer.line;
+	endOfProgramToken.literal = nullptr;
+
+	lexer.addToken(endOfProgramToken);
 	std::cout << lexer.getTokens().size() << '\n';
 	return lexer.getTokens();
 }
 
-// TODO: rewrite lexer
 std::optional<Error<std::string>> Lexer::lexNext() {
 	char ch = advance().unwrap();
 	std::optional<Error<std::string>> maybeErr;
@@ -134,13 +139,14 @@ std::optional<Error<std::string>> Lexer::lexNext() {
 		default:
 			if (std::isalpha(ch)) {
 				emptyToken(IDENTIFIER);
+
 			} else if (std::isdigit(ch)) {
 				maybeErr = numberToken();
+			} else {
+				std::string errorString = "Unknown character: ";
+				errorString.push_back(ch);
+				maybeErr = Error<std::string>(errorString);
 			}
-
-			std::string errorString = "Unknown character: ";
-			errorString.push_back(ch);
-			maybeErr = Error<std::string>(errorString);
 	}
 
 	if (maybeErr.has_value()) {
@@ -176,23 +182,25 @@ std::optional<Error<std::string>> Lexer::stringToken() {
 
 	current++;
 
-	Literal lit = source.substr(start + 1, current - 1);
+	Literal lit = source.substr(start + 1, current - (start + 1));
 	token(STRING, lit);
 	return std::nullopt;
 }
 
 std::optional<Error<std::string>> Lexer::numberToken() {
-	while (std::isdigit(peek().unwrap())) {
+	while (std::isdigit(peek().unwrap()) && !isAtEnd()) {
 		current++;
 	}
 
-	if (peek().unwrap() == '.') {
+	if (peek().unwrap() == '.' && !isAtEnd()) {
+		current++;
+
 		while (std::isdigit(peek().unwrap())) {
 			current++;
 		}
 	}
 
-	std::string str = source.substr(start, current);
+	std::string str = source.substr(start, current - start);
 
 	try {
 		Literal lit = std::stod(str);
@@ -210,7 +218,7 @@ void Lexer::emptyToken(TokenType type) {
 void Lexer::token(TokenType type, Literal literal) {
 	Token tok;
 	tok.type = type;
-	tok.lexeme = source.substr(start, current - 1);
+	tok.lexeme = source.substr(start, current - start);
 	tok.line = line;
 	tok.literal = literal;
 
