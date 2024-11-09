@@ -7,7 +7,7 @@
 #include <vector>
 
 int main() {
-	std::string source = "(){}";
+	std::string source = "(){} \"guh\"";
 	unilang::Result<std::vector<unilang::Token>, std::string> maybeTokens = unilang::Lexer::lex(source);
 	std::vector<unilang::Token> tokens = maybeTokens.unwrap();
 

@@ -209,7 +209,7 @@ void Lexer::emptyToken(TokenType type) {
 void Lexer::token(TokenType type, Literal literal) {
 	Token tok;
 	tok.type = type;
-	tok.lexeme = source.substr(start, current);
+	tok.lexeme = source.substr(start, current - 1);
 	tok.line = line;
 	tok.literal = literal;
 
