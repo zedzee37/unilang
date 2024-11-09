@@ -2,9 +2,7 @@
 #define TOKEN_HPP
 
 #include "core_defs.hpp"
-#include <cstddef>
 #include <string>
-#include <variant>
 
 namespace unilang {
 enum TokenType {
