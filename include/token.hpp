@@ -3,6 +3,7 @@
 
 #include "core_defs.hpp"
 #include <string>
+#include <variant>
 
 namespace unilang {
 enum TokenType {

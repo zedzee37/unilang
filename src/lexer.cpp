@@ -26,6 +26,7 @@ Result<std::vector<Token>, std::string> Lexer::lex(std::string source) {
 	return lexer.getTokens();
 }
 
+// TODO: rewrite lexer
 std::optional<Error<std::string>> Lexer::lexNext() {
 	char ch = advance().unwrap();
 	std::optional<Error<std::string>> maybeErr;
