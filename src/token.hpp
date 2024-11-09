@@ -2,19 +2,56 @@
 #define TOKEN_HPP
 
 #include "core_defs.hpp"
+#include <cstddef>
 #include <string>
 #include <variant>
 
 namespace unilang {
 enum TokenType {
+	LEFT_PAREN,
+	RIGHT_PAREN,
+	LEFT_BRACKET,
+	RIGHT_BRACKET,
+	LEFT_BRACE,
+	RIGHT_BRACE,
+	MINUS,
+	PLUS,
+	EQUALS,
+	STAR,
+	SLASH,
+	DOT,
+	COMMA,
+	STRING,
+	NUMBER,
+	NIL,
 
+	IDENTIFIER,
+	BREAK,
+	TRUE,
+	FALSE,
+	PROCEDURE,
+	WHILE,
+	IF,
+	OTHERWISE,
+	START,
+	END,
+	CONVERSELY,
+	AND,
+	MATCHES,
+	LESS,
+	GREATER,
+	RETURN,
+	NOT,
+	EOP,
 };
+
+typedef std::variant<std::string, f64, std::nullptr_t> Literal;
 
 struct Token {
 	TokenType type;
 	std::string lexeme;
 	u32 line;
-	std::variant<std::string, f32> literal;
+	Literal literal;
 };
 
 } //namespace unilang

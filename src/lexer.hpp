@@ -13,7 +13,7 @@ class Lexer {
 public:
 	Lexer(std::string source) :
 			source(source), start(0), current(0), line(1) {}
-	~Lexer();
+	~Lexer() = default;
 
 	static Result<std::vector<Token>, std::string> lex(std::string source);
 
@@ -26,7 +26,14 @@ private:
 
 	std::optional<Error<std::string>> lexNext();
 	Result<char, std::string> advance();
+	Result<char, std::string> peek() const;
+	std::optional<Error<std::string>> stringToken();
+	std::optional<Error<std::string>> numberToken();
+	void emptyToken(TokenType type);
+	void token(TokenType type, Literal literal);
+	void addToken(Token token);
 	bool isAtEnd() const;
+	std::vector<Token> getTokens() const;
 };
 
 } //namespace unilang
