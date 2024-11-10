@@ -6,35 +6,34 @@
 
 namespace unilang {
 
-template <typename E>
 class Error {
 public:
-	Error(E error) :
+	Error(std::string error) :
 			error(error) {}
 
-	E getError() const {
+	std::string getError() const {
 		return error;
 	}
 
-	Error &operator=(const E &otherError) {
+	Error &operator=(const std::string &otherError) {
 		error = otherError;
 		return *this;
 	}
 
 private:
-	E error;
+	std::string error;
 };
 
-template <typename T, typename E>
+template <typename T>
 class Result {
 public:
 	Result(const T &value) :
 			value(value) {}
 	Result(T &&value) :
 			value(std::move(value)) {}
-	Result(const Error<E> &error) :
+	Result(const Error &error) :
 			value(error) {}
-	Result(Error<E> &&error) :
+	Result(Error &&error) :
 			value(std::move(error)) {}
 
 	Result &operator=(const T &newValue) {
@@ -47,12 +46,12 @@ public:
 		return *this;
 	}
 
-	Result &operator=(const Error<E> &newError) {
+	Result &operator=(const Error &newError) {
 		value = newError;
 		return *this;
 	}
 
-	Result &operator=(Error<E> &&newError) {
+	Result &operator=(Error &&newError) {
 		value = std::move(newError);
 		return *this;
 	}
@@ -62,27 +61,27 @@ public:
 	}
 
 	bool isError() const {
-		return std::holds_alternative<Error<E>>(value);
+		return std::holds_alternative<Error>(value);
 	}
 
 	T unwrap() const {
 		if (isError()) {
-			throw std::runtime_error("Attempted to unwrap on an Error!");
+			throw std::runtime_error("Attempted to unwrap error: " + err());
 		}
 
 		return std::get<T>(value);
 	}
 
-	E err() const {
+	std::string err() const {
 		if (isOk()) {
 			throw std::runtime_error("Attempted to get an invalid Error!");
 		}
 
-		return std::get<Error<E>>(value).getError();
+		return std::get<Error>(value).getError();
 	}
 
 private:
-	std::variant<T, Error<E>> value;
+	std::variant<T, Error> value;
 };
 
 }; //namespace unilang

@@ -15,7 +15,7 @@ public:
 			source(source), start(0), current(0), line(1) {}
 	~Lexer() = default;
 
-	static Result<std::vector<Token>, std::string> lex(std::string source);
+	static Result<std::vector<Token>> lex(std::string source);
 
 private:
 	std::string source;
@@ -24,11 +24,11 @@ private:
 	u32 current;
 	u32 line;
 
-	std::optional<Error<std::string>> lexNext();
-	Result<char, std::string> advance();
-	Result<char, std::string> peek() const;
-	std::optional<Error<std::string>> stringToken();
-	std::optional<Error<std::string>> numberToken();
+	std::optional<Error> lexNext();
+	Result<char> advance();
+	Result<char> peek() const;
+	std::optional<Error> stringToken();
+	std::optional<Error> numberToken();
 	void emptyToken(TokenType type);
 	void token(TokenType type, Literal literal);
 	void addToken(Token token);

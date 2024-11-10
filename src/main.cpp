@@ -6,14 +6,15 @@
 #include <string>
 #include <vector>
 
-int main() {
-	std::string source = "(){} \"guh\" 15.34324 a";
-	unilang::Result<std::vector<unilang::Token>, std::string> maybeTokens = unilang::Lexer::lex(source);
-	std::vector<unilang::Token> tokens = maybeTokens.unwrap();
+void run(std::string source) {
+	std::vector<unilang::Token> tokens = unilang::Lexer::lex(source).unwrap();
 
-	for (const unilang::Token &tok : tokens) {
-		std::cout << "Token: " << tok.lexeme << '\n';
+	for (const unilang::Token &token : tokens) {
+		std::cout << token.type << ' ' << token.lexeme << '\n';
 	}
+}
 
+int main() {
+	run("g a b 12343 {}");
 	return 0;
 }

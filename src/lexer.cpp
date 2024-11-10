@@ -2,19 +2,18 @@
 #include "result.hpp"
 #include "token.hpp"
 #include <cctype>
-#include <exception>
 #include <iostream>
 #include <optional>
 #include <string>
 #include <vector>
 
 namespace unilang {
-Result<std::vector<Token>, std::string> Lexer::lex(std::string source) {
+Result<std::vector<Token>> Lexer::lex(std::string source) {
 	Lexer lexer(source);
 
 	while (!lexer.isAtEnd()) {
 		lexer.start = lexer.current;
-		std::optional<Error<std::string>> err = lexer.lexNext();
+		std::optional<Error> err = lexer.lexNext();
 
 		if (err.has_value()) {
 			return err.value();
@@ -32,9 +31,9 @@ Result<std::vector<Token>, std::string> Lexer::lex(std::string source) {
 	return lexer.getTokens();
 }
 
-std::optional<Error<std::string>> Lexer::lexNext() {
+std::optional<Error> Lexer::lexNext() {
 	char ch = advance().unwrap();
-	std::optional<Error<std::string>> maybeErr;
+	std::optional<Error> maybeErr;
 
 	switch (ch) {
 		case '(':
@@ -145,7 +144,7 @@ std::optional<Error<std::string>> Lexer::lexNext() {
 			} else {
 				std::string errorString = "Unknown character: ";
 				errorString.push_back(ch);
-				maybeErr = Error<std::string>(errorString);
+				maybeErr = Error(errorString);
 			}
 	}
 
@@ -156,26 +155,26 @@ std::optional<Error<std::string>> Lexer::lexNext() {
 	return std::nullopt;
 }
 
-Result<char, std::string> Lexer::advance() {
+Result<char> Lexer::advance() {
 	if (isAtEnd()) {
-		return Error<std::string>("Attempted to advance while at the end of the string!");
+		return Error("Attempted to advance while at the end of the string!");
 	}
 
 	return source[current++];
 }
 
-Result<char, std::string> Lexer::peek() const {
+Result<char> Lexer::peek() const {
 	if (current >= source.size()) {
-		return Error<std::string>("Attempted to access string out of bounds!");
+		return Error("Attempted to access string out of bounds!");
 	}
 
 	return source[current];
 }
 
-std::optional<Error<std::string>> Lexer::stringToken() {
+std::optional<Error> Lexer::stringToken() {
 	while (peek().unwrap() != '"') {
 		if (isAtEnd()) {
-			return Error<std::string>("String was unterminated!");
+			return Error("String was unterminated!");
 		}
 		current++;
 	}
@@ -187,7 +186,7 @@ std::optional<Error<std::string>> Lexer::stringToken() {
 	return std::nullopt;
 }
 
-std::optional<Error<std::string>> Lexer::numberToken() {
+std::optional<Error> Lexer::numberToken() {
 	while (std::isdigit(peek().unwrap()) && !isAtEnd()) {
 		current++;
 	}
@@ -207,7 +206,7 @@ std::optional<Error<std::string>> Lexer::numberToken() {
 		token(NUMBER, lit);
 		return std::nullopt;
 	} catch (std::exception &e) {
-		return Error<std::string>("Was unable to convert the number!");
+		return Error("Was unable to convert the number!");
 	}
 }
 
