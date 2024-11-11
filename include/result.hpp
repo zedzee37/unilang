@@ -20,6 +20,10 @@ public:
 		return *this;
 	}
 
+	void raise() {
+		throw std::runtime_error(error);
+	}
+
 private:
 	std::string error;
 };
